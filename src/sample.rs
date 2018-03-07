@@ -20,8 +20,8 @@ pub mod donation {
 	use pwasm_abi_derive::eth_abi;
 	use alloc::Vec;
 
-    static TOTAL_DONATED_KEY: H256 = H256([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-    static TOP_DONOR_KEY: H256 = H256([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+	static TOTAL_DONATED_KEY: H256 = H256([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+	static TOP_DONOR_KEY: H256 = H256([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 
 	#[eth_abi(DonationEndpoint, DonationClient)]
 	pub trait DonationContract {
