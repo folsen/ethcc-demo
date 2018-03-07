@@ -8,6 +8,7 @@ pwasm-std = "0.5"
 pwasm-ethereum = "0.1"
 pwasm-abi = "0.1"
 pwasm-abi-derive = "0.1"
+pwasm-test = { git = "https://github.com/paritytech/pwasm-test", default-features = false, optional = true }
 
 [dependencies.bigint]
 version = "4"
@@ -17,15 +18,13 @@ default-features = false
 version = "1"
 default-features = false
 
-[dev-dependencies]
-pwasm-test = { git = "https://github.com/paritytech/pwasm-test" }
-
 [lib]
 crate-type = ["cdylib"]
 path = "src/sample.rs"
 
 [features]
 std = ["pwasm-std/std", "pwasm-ethereum/std"]
+test = [ "pwasm-test", "std" ]
 
 [profile.release]
 panic = "abort"
