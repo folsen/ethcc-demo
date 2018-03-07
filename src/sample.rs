@@ -105,16 +105,19 @@ mod tests {
 		let sender_two = Address::from("0xca7cafe000000000000000000000000000000000");
 		// Here we're creating an External context using ExternalBuilder and set the `sender` to the `owner_address`
 		// so `pwasm_ethereum::sender()` in DonationContract::constructor() will return that `owner_address`
-		ext_update(|e| e.sender(sender_one.clone()));
-		ext_update(|e| e.value(500.into()));
-
+		ext_update(|e| e
+			.sender(sender_one.clone())
+			.value(500.into())
+		);
 		contract.constructor();
 		assert_eq!(contract.totalDonations(), 0.into());
 		contract.donate();
 		assert_eq!(contract.totalDonations(), 500.into());
-
-		ext_update(|e| e.sender(sender_two.clone()));
-		ext_update(|e| e.value(250.into()));
+		
+		ext_update(|e| e
+			.sender(sender_two.clone())
+			.value(250.into())
+		);
 		contract.donate();
 		assert_eq!(contract.totalDonations(), 750.into());
 		assert_eq!(contract.topDonor(), sender_one);
