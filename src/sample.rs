@@ -90,7 +90,8 @@ pub mod donation {
 		fn topDonor(&mut self) -> Address;
 		/// Donate, whatever balance you send will be the donated amount
 		fn donate(&mut self);
-		fn withdraw(&mut self);
+		/// Let the creator of the contract withdraw money
+		fn withdraw(&mut self) -> bool;
 		/// Event declaration
 		#[event]
 		fn Donation(&mut self, indexed_from: Address, _value: U256);
@@ -128,13 +129,15 @@ pub mod donation {
 			self.Donation(sender, donation);
 		}
 
-
-		fn withdraw(&mut self) {
+		fn withdraw(&mut self) -> bool {
 			let total = read(&TOTAL_DONATED_KEY).into();
 			let owner = address_of(&OWNER_KEY);
 
 			if sender() == owner {
-				call(21000, &Address::from(owner), total, &[], &mut []).expect("Call should succeed");
+				write(&TOTAL_DONATED_KEY, &U256::from(0).into());
+				call(21000, &Address::from(owner), total, &[], &mut []).is_ok()
+			} else {
+				false
 			}
 		}
 
