@@ -28,8 +28,10 @@ pub mod donation {
 		/// The constructor
 		fn constructor(&mut self);
 		/// Total amount of donations
+		#[constant]
 		fn totalDonations(&mut self) -> U256;
 		/// See who the top donor is
+		#[constant]
 		fn topDonor(&mut self) -> Address;
 		/// Donate, whatever balance you send will be the donated amount
 		fn donate(&mut self);
