@@ -14,7 +14,7 @@ var abi = JSON.parse(fs.readFileSync("./target/json/DonationContract.json"));
 // convert Wasm binary to hex format
 var codeHex = '0x' + fs.readFileSync("./target/pwasm_tutorial_contract.wasm").toString('hex');
 
-var DonationContract = new web3.eth.Contract(abi, { data: codeHex, from: web3.eth.defaultAccount });
+var DonationContract = new web3.eth.Contract(abi, { data: codeHex, from: web3.eth.defaultAccount, gas: 4000000 });
 
 // Will create DonationContract
 DonationContract
