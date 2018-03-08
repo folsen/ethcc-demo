@@ -69,13 +69,14 @@ extern crate bigint;
 pub mod donation {
 	use pwasm_std::Vec;
 	use parity_hash::{H256, Address};
-	use pwasm_ethereum::{read, write, sender, value};
+	use pwasm_ethereum::{read, write, sender, value, call};
 	use bigint::U256;
 
 	use pwasm_abi_derive::eth_abi;
 
 	static TOTAL_DONATED_KEY: H256 = H256([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 	static TOP_DONOR_KEY: H256 = H256([2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+	static OWNER_KEY: H256 = H256([3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 
 	#[eth_abi(DonationEndpoint, DonationClient)]
 	pub trait DonationContract {
@@ -89,6 +90,7 @@ pub mod donation {
 		fn topDonor(&mut self) -> Address;
 		/// Donate, whatever balance you send will be the donated amount
 		fn donate(&mut self);
+		fn withdraw(&mut self);
 		/// Event declaration
 		#[event]
 		fn Donation(&mut self, indexed_from: Address, _value: U256);
@@ -106,6 +108,7 @@ pub mod donation {
 	impl DonationContract for DonationContractInstance {
 		fn constructor(&mut self) {
 			write(&TOTAL_DONATED_KEY, &U256::from(0).into());
+			write(&OWNER_KEY, &H256::from(&sender()).into());
 		}
 
 		fn totalDonations(&mut self) -> U256 {
@@ -113,8 +116,7 @@ pub mod donation {
 		}
 
 		fn topDonor(&mut self) -> Address {
-			let top_donor: H256 = read(&TOP_DONOR_KEY).into();
-			Address::from(top_donor)
+			address_of(&TOP_DONOR_KEY)
 		}
 
 		fn donate(&mut self) {
@@ -126,6 +128,21 @@ pub mod donation {
 			self.Donation(sender, donation);
 		}
 
+
+		fn withdraw(&mut self) {
+			let total = read(&TOTAL_DONATED_KEY).into();
+			let owner = address_of(&OWNER_KEY);
+
+			if sender() == owner {
+				call(21000, &Address::from(owner), total, &[], &mut []).expect("Call should succeed");
+			}
+		}
+
+	}
+
+	fn address_of(key: &H256) -> Address {
+		let h: H256 = read(key).into();
+		Address::from(h)
 	}
 
 	fn setTopDonor(sender: Address, amount: U256) {
@@ -179,7 +196,7 @@ mod tests {
 	extern crate pwasm_test;
 	extern crate std;
 	use super::*;
-	use self::pwasm_test::ext_update;
+	use self::pwasm_test::{ext_update, ext_get};
 	use parity_hash::Address;
 	use donation::DonationContract;
 
