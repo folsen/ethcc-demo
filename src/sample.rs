@@ -1,24 +1,22 @@
 #![no_std]
 #![allow(non_snake_case)]
-#![feature(alloc)]
 #![feature(proc_macro)]
 
 extern crate parity_hash;
 extern crate pwasm_std;
 extern crate pwasm_ethereum;
-extern crate alloc;
 extern crate pwasm_abi;
 extern crate pwasm_abi_derive;
 /// Bigint used for 256-bit arithmetic
 extern crate bigint;
 
 pub mod donation {
+	use pwasm_std::Vec;
 	use parity_hash::{H256, Address};
 	use pwasm_ethereum::{read, write, sender, value};
 	use bigint::U256;
 
 	use pwasm_abi_derive::eth_abi;
-	use alloc::Vec;
 
 	static TOTAL_DONATED_KEY: H256 = H256([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 	static TOP_DONOR_KEY: H256 = H256([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
@@ -115,7 +113,7 @@ mod tests {
 		assert_eq!(contract.totalDonations(), 0.into());
 		contract.donate();
 		assert_eq!(contract.totalDonations(), 500.into());
-		
+
 		ext_update(|e| e
 			.sender(sender_two.clone())
 			.value(250.into())
@@ -124,6 +122,6 @@ mod tests {
 		assert_eq!(contract.totalDonations(), 750.into());
 		assert_eq!(contract.topDonor(), sender_one);
 		// 2 log entries should be created
-		//assert_eq!(ext_get().logs().len(), 2);
+		assert_eq!(ext_get().logs().len(), 2);
 	}
 }
