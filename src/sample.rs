@@ -1,4 +1,38 @@
 #![no_std]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #![allow(non_snake_case)]
 #![feature(proc_macro)]
 
@@ -10,6 +44,28 @@ extern crate pwasm_abi_derive;
 /// Bigint used for 256-bit arithmetic
 extern crate bigint;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pub mod donation {
 	use pwasm_std::Vec;
 	use parity_hash::{H256, Address};
@@ -18,8 +74,8 @@ pub mod donation {
 
 	use pwasm_abi_derive::eth_abi;
 
-	static TOTAL_DONATED_KEY: H256 = H256([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
-	static TOP_DONOR_KEY: H256 = H256([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+	static TOTAL_DONATED_KEY: H256 = H256([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+	static TOP_DONOR_KEY: H256 = H256([2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 
 	#[eth_abi(DonationEndpoint, DonationClient)]
 	pub trait DonationContract {
@@ -38,6 +94,13 @@ pub mod donation {
 		fn Donation(&mut self, indexed_from: Address, _value: U256);
 	}
 
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	pub struct DonationContractInstance;
 
 	impl DonationContract for DonationContractInstance {
@@ -72,15 +135,11 @@ pub mod donation {
 		}
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Declares the dispatch and dispatch_ctor methods
 use pwasm_abi::eth::EndpointInterface;
-
-#[no_mangle]
-pub fn call() {
-	let mut endpoint = donation::DonationEndpoint::new(donation::DonationContractInstance{});
-	// Read http://solidity.readthedocs.io/en/develop/abi-spec.html#formal-specification-of-the-encoding for details
-	pwasm_ethereum::ret(&endpoint.dispatch(&pwasm_ethereum::input()));
-}
 
 #[no_mangle]
 pub fn deploy() {
@@ -88,13 +147,39 @@ pub fn deploy() {
 	endpoint.dispatch_ctor(&pwasm_ethereum::input());
 }
 
+#[no_mangle]
+pub fn call() {
+	let mut endpoint = donation::DonationEndpoint::new(donation::DonationContractInstance{});
+	pwasm_ethereum::ret(&endpoint.dispatch(&pwasm_ethereum::input()));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod tests {
 	extern crate pwasm_test;
 	extern crate std;
 	use super::*;
-	use self::pwasm_test::{ext_update, ext_get};
+	use self::pwasm_test::ext_update;
 	use parity_hash::Address;
 	use donation::DonationContract;
 
